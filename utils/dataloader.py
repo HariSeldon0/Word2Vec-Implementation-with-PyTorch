@@ -10,8 +10,8 @@ class Tokenizer:
         self._token_to_idx = {token: idx for idx, token in enumerate(sorted(vocab))}
         self._idx_to_token = {idx: token for token, idx in self._token_to_idx.items()}
 
-    def token_to_idx(self, tokens):
-        return self._token_to_idx[tokens]
+    def token_to_idx(self, token):
+        return self._token_to_idx[token]
 
     def idx_to_token(self, idx):
         if isinstance(idx, torch.Tensor):
@@ -23,10 +23,13 @@ class Tokenizer:
 
 
 def get_dataloader_and_tokenizer(batch_size, half_context_window=2, min_freq=0):
-
-    wiki_dataset = load_dataset("Salesforce/wikitext", "wikitext-2-v1", split="train")
+    print("Load dataset")
+    wiki_dataset = load_dataset(
+        "/root/autodl-tmp/Word2Vec-Implementation-with-PyTorch/wikitext-2-v1",
+        split="train",
+    )
     corpus = wiki_dataset["text"]
-    token_counts = Counter("".join(corpus).split())
+    token_counts = Counter(" ".join(corpus).lower().split())
     filtered_vocab = {
         token for token, count in token_counts.items() if count >= min_freq
     }
@@ -34,7 +37,7 @@ def get_dataloader_and_tokenizer(batch_size, half_context_window=2, min_freq=0):
 
     filtered_corpus = []
     for sentence in corpus:
-        words = sentence.split()
+        words = sentence.lower().split()
         tmp = []
         for word in words:
             if word in filtered_vocab:
