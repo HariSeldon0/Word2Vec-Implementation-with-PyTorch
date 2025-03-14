@@ -18,8 +18,9 @@ class Trainer:
             self._train_epoch()
 
     def _train_epoch(self):
-        self.model.train()
+        size = len(self.dataloader)
 
+        self.model.train()
         for idx, (inputs, labels) in enumerate(self.dataloader):
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
@@ -30,8 +31,8 @@ class Trainer:
             loss.backward()
             self.optimizer.step()
 
-            if idx % 1000 == 0:
+            if idx % (size / 10) == 0:
                 print(f"loss:{loss.item()}")
 
     def save_model(self, path):
-        torch.save(self.model.state_dict(), path)
+        torch.save(self.model, path)
